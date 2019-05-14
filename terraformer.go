@@ -36,9 +36,18 @@ func main() {
 	}
 
 	var context interface{}
-	yaml.Unmarshal(data, &context)
+	err = yaml.Unmarshal(data, &context)
+	if err != nil {
+		fmt.Printf("error %v\n", err)
+		os.Exit(1)
+	}
 
-	template.Execute(os.Stdout, context)
+
+	err = template.Execute(os.Stdout, context)
+	if err != nil {
+		fmt.Printf("error %v\n", err)
+		os.Exit(1)
+	}
 }
 
 func usage() {
