@@ -1,5 +1,11 @@
-project_name: terraformer
-
+# This is an example goreleaser.yaml file with some sane defaults.
+# Make sure to check the documentation at http://goreleaser.com
+before:
+  hooks:
+    # you may remove this if you don't use vgo
+    - go mod download
+    # you may remove this if you don't need go generate
+    - go generate ./...
 builds:
   - goos:
       - linux
@@ -10,41 +16,33 @@ builds:
     main: terraformer.go
     binary: terraformer
     ldflags: -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}}
-  - env:
-      - CGO_ENABLED=0
 
-
-archive:
-  format: tar.gz
-  replacements:
+archives:
+- replacements:
     darwin: Darwin
     linux: Linux
     windows: Windows
     386: i386
     amd64: x86_64
-  files:
-    - README*
-    - LICENSE
 
 checksum:
   name_template: 'checksums.txt'
 
 snapshot:
-  name_template: "{{ .Tag }}-snapshot"
+  name_template: "{{ .Tag }}-next"
 
-release:
-  draft: false
-  github:
-    owner: sklevenz
-    name: terraformer
+changelog:
+  sort: asc
+  filters:
+    exclude:
+    - '^docs:'
+    - '^test:'
 
 brew:
   folder: Formula
   caveats: "How to use this binary"
   homepage: "https://github.com/sklevenz/terraformer"
   description: "A go program that generates terraform using go templates ..."
-  test: |
-    system "#{bin}/terraformer"
   install: |
     bin.install "terraformer"
   github:
