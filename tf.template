@@ -1,0 +1,9 @@
+provider "aws" {
+  access_key = "{{ .context.access_key }}"
+  secret_key = "{{ .context.secret_key }}"
+  region     = "us-west-1"
+}
+
+1 {{ . }}
+2 {{ index .context.lll 0 }}
+3 {{ index .context "mmm" 2 "cc" }}

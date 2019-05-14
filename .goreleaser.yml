@@ -1,0 +1,52 @@
+project_name: terraformer
+
+builds:
+  - goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+    main: terraformer.go
+    binary: terraformer
+    ldflags: -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}}
+  - env:
+      - CGO_ENABLED=0
+
+
+archive:
+  format: tar.gz
+  replacements:
+    darwin: Darwin
+    linux: Linux
+    windows: Windows
+    386: i386
+    amd64: x86_64
+  files:
+    - README*
+    - LICENSE
+
+checksum:
+  name_template: 'checksums.txt'
+
+snapshot:
+  name_template: "{{ .Tag }}-snapshot"
+
+release:
+  draft: false
+  github:
+    owner: sklevenz
+    name: terraformer
+
+brew:
+  folder: Formula
+  caveats: "How to use this binary"
+  homepage: "https://github.com/sklevenz/terraformer"
+  description: "A go program that generates terraform using go templates ..."
+  test: |
+    system "#{bin}/terraformer"
+  install: |
+    bin.install "terraformer"
+  github:
+    owner: sklevenz
+    name: homebrew-skl
