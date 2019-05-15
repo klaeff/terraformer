@@ -26,7 +26,7 @@ func main() {
 	os.Exit(main_(templatePath, configPath))
 }
 
-func main_ (templatePath string, configPath string) int {
+func main_(templatePath string, configPath string) int {
 
 	template, err := template.ParseFiles(templatePath)
 	if err != nil {
@@ -54,7 +54,6 @@ func main_ (templatePath string, configPath string) int {
 	}
 	return 0
 }
-
 
 func usage() {
 	fmt.Printf("usage  : terraformer [go template file] [config yaml file]\n")
