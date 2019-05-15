@@ -17,38 +17,44 @@ var (
 func main() {
 	if len(os.Args) != 3 {
 		usage()
-		os.Exit(1)
+		os.Exit(-1)
 	}
 
 	templatePath := os.Args[1]
 	configPath := os.Args[2]
 
+	os.Exit(main_(templatePath, configPath))
+}
+
+func main_ (templatePath string, configPath string) int {
+
 	template, err := template.ParseFiles(templatePath)
 	if err != nil {
 		fmt.Printf("error %v\n", err)
-		os.Exit(1)
+		return -1
 	}
 
 	data, err := ioutil.ReadFile(configPath)
 	if err != nil {
 		fmt.Printf("error %v\n", err)
-		os.Exit(1)
+		return -1
 	}
 
 	var context interface{}
 	err = yaml.Unmarshal(data, &context)
 	if err != nil {
 		fmt.Printf("error %v\n", err)
-		os.Exit(1)
+		return -1
 	}
-
 
 	err = template.Execute(os.Stdout, context)
 	if err != nil {
 		fmt.Printf("error %v\n", err)
-		os.Exit(1)
+		return -1
 	}
+	return 0
 }
+
 
 func usage() {
 	fmt.Printf("usage  : terraformer [go template file] [config yaml file]\n")

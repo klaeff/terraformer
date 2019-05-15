@@ -12,7 +12,7 @@ I don't like terraforms programming syntax and think using a generic template la
 Why not ruby or phyton which has nice templating as well? Because of you don't get it as a single binary.
 
 
-## example
+## examples
 
 terraform template file
 
@@ -31,6 +31,17 @@ context:
   access_key: 123
   secret_key: "abc"
 ```
+
+## try out 
+```
+go run terraformer.go ./examples/tf.template ./examples/conterxt.yml
+```
+
+## build
+
+go test
+go build
+
 
 ## installation (osx)
 
