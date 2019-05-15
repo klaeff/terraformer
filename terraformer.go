@@ -15,17 +15,18 @@ var (
 )
 
 func main() {
-	os.Exit(main_())
-}
-
-func main_ () int {
 	if len(os.Args) != 3 {
 		usage()
-		return -1
+		os.Exit(-1)
 	}
 
 	templatePath := os.Args[1]
 	configPath := os.Args[2]
+
+	os.Exit(main_(templatePath, configPath))
+}
+
+func main_ (templatePath string, configPath string) int {
 
 	template, err := template.ParseFiles(templatePath)
 	if err != nil {
