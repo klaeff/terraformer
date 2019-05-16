@@ -1,4 +1,4 @@
-# terraformer ![terraformer](doc/terraformer-logo.png)
+# terraformer 
 A go program that generates terraform files using go templates
 
 ![terraformer](doc/terraformer-planet.jpg)
@@ -82,12 +82,15 @@ context:
 
 ## try out 
 ```
-go run terraformer.go ./examples/tf.template ./examples/conterxt.yml
+go run terraformer.go ./examples/aws/tf.template ./examples/aws/context.yml
 ```
 
 ## build
 
+```
 go test
 go build
+```
 
+![terraformer](doc/terraformer-logo-small.png)
 
