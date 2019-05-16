@@ -1,0 +1,14 @@
+provider "aws" {
+  access_key = "{{ .context.access_key }}"
+  secret_key = "{{ .context.secret_key }}"
+  region     = "us-west-1"
+}
+
+resource "aws_route53_record" "some-dns-record" {
+  zone_id = "{{ .context.config.aws.zone_id }}"
+  name    = "{{ printf "host.%v" .context.config.domain }}"
+  type    = "A"
+  ttl     = "60"
+  records = "{{ tfStringListFormater .context.config.node_ips }}"
+}
+

@@ -5,6 +5,7 @@ import (
 	"github.com/go-yaml/yaml"
 	"io/ioutil"
 	"os"
+	"path"
 	"text/template"
 )
 
@@ -28,7 +29,13 @@ func main() {
 
 func main_(templatePath string, configPath string) int {
 
-	template, err := template.ParseFiles(templatePath)
+	funcMap := template.FuncMap{
+		"tfStringListFormater": tfStringListFormater,
+	}
+
+	templateName := path.Base(templatePath)
+	template, err := template.New(templateName).Funcs(funcMap).ParseFiles(templatePath)
+
 	if err != nil {
 		fmt.Printf("error %v\n", err)
 		return -1
@@ -61,3 +68,23 @@ func usage() {
 	fmt.Printf("commit : %v \n", commit)
 	fmt.Printf("date   : %v \n", date)
 }
+
+func tfStringListFormater(a [] interface{}) string {
+	var result string = "[]"
+
+	if a == nil {return result}
+	if len(a) == 0 {return result}
+	if len(a) == 1 {return fmt.Sprintf("[\"%v\"]", a[0])}
+
+	result = "["
+	for idx, val := range a {
+		if idx < (len(a) - 1) {
+			result = fmt.Sprintf("%v\"%v\", ", result, val)
+		} else {
+			result = fmt.Sprintf("%v\"%v\"]",  result, val)
+		}
+	}
+
+	return result
+}
+

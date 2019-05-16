@@ -1,0 +1,11 @@
+context:
+  access_key: 123
+  secret_key: "abc"
+
+  config:
+    domain: "bla.com"
+    node_ips: [1.1.1.1, "2.2.2.2", 3.3.3.3]
+    aws:
+      zone_id: "zzz"
+
+

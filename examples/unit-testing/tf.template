@@ -1,0 +1,4 @@
+1 {{ . }}
+2 {{ index .context.lll 0 }}
+3 {{ index .context "mmm" 2 "cc" }}
+
