@@ -92,5 +92,11 @@ go test
 go build
 ```
 
+## todo
+
+- introduce flags, kingpin, etc for better command line experience
+- think about how to get dynamic data into context (e.g. kubectl queries)
+- more terraform samples
+
 ![terraformer](doc/terraformer-logo-small.png)
 
