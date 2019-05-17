@@ -1,0 +1,21 @@
+context:
+  env: {{ env }}
+  state: {{ tfState }}
+  config: {{ config }}
+  callback: {{ call "bla.sh" }}
+
+
+terraformer generate-context \
+  template=./context-template
+  tfstate,tfs=./terraform.tfstate \
+  config,c=./config1.yml ./config2.yml ./config3.yml \
+  callback,cb=./cb1.sh ./cb2.sh ./cb3.sh \
+  > context.yml
+
+
+terraformer generate \
+  template,t=./tf-template \
+  context,ctx=./context.yml \
+  > main.tf
+
+
