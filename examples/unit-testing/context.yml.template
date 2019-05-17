@@ -1,0 +1,5 @@
+context:
+  env: {{ env }}
+  state: {{ tfState }}
+  config: {{ config }}
+  callback: {{ call "bla.sh" }}

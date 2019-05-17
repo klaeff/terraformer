@@ -1,4 +1,4 @@
-# terraformer 
+# terraformer
 A go program that generates terraform files using go templates
 
 ![terraformer](doc/terraformer-planet.jpg)
@@ -11,12 +11,26 @@ brew install sklevenz/skl/terraformer
 
 ## usage
 
-`terraformer [template] [config]` 
+```
+usage: terraformer [<flags>] <command> [<args> ...]
 
-- `template` is a go template file path 
-- `config` is a yaml file path
+A go program that generates terraform files using go templates
 
-The config.yaml will be read into a hashmap and can then be processed within the go template file.
+Flags:
+  --help     Show context-sensitive help (also try --help-long and --help-man).
+  --version  Show application version.
+
+Commands:
+  help [<command>...]
+    Show help.
+
+  generate <terraform-template> <context>
+    generate a terraform file (main.tf)
+
+  generate-context [<flags>] [<config-files>...]
+    generate a context yaml file
+```
+
 
 ## motivation
 
@@ -28,18 +42,30 @@ This solution uses go as technology and the go templates. Go, because of the sin
 
 ## concept
 
+
+
+
+
 The idea is:
-- have simple template files
-- have a context yaml file containing variable data 
-- generate a terraform file
-- apply terraform file to the infrastructure
+
+- step 1
+  - collect all configuration within a single context yaml file
+  - configuration can come from
+    - environment variables
+    - config files
+    - terraform state files
+    - command executions
+    - ...  
+- step 2
+  - use a simple go template
+  - and generate a main.tf file using the context data
+- step 3
+  - apply the main.tf file to terraform 
 
 The template file should be simple. Ideally it is a flat list of resources. Programming logic and variable substitution is done by go templating.
-The context is a single source of data. Basically it is a yaml data structure which is accessible in the go template as `{{.}}`. This context is maybe generated as well and get's data from all kind of sources. Static configuration, calculations, environment variables, other yaml files, terraform state files, etc. Here we don't care about how this is done. 
-The result is a main.tf containing all resources and all data. Apply this with terraform.
+The context is a single source of data. Basically it is a yaml data structure which is accessible in the go template as `{{.}}`. This context is maybe generated as well and get's data from all kind of sources. Static configuration, command executions, environment variables, other yaml files, terraform state files, etc. The result should be a main.tf containing all resources and all data. Apply this with terraform.
 
 ![terraformer](doc/terraformer.png)
-
 
 ## best practices
 
@@ -50,8 +76,6 @@ Data sources, variable, loops, dependencies, modules ... all of this makes maint
 - practice TDI (test driven infrastructure)
   - create a test account
   - deploy form scratch, update and delete
-    
-
 
 ## examples
 
@@ -75,12 +99,28 @@ context:
 
 ## features
 
+Go template processing is can be easily extended by special functions. The first command is `tfStringListFormater`. This was required because of kubectl of kubernetes returns list of IPs without quotes which are not accepted by terraform.
+
 | feature | description | example |
 |---------|-------------|---------|
 | tfStringListFormater | formats a list with quoted elements | [1,2,3] -> ["1","2","3"] |
 | more to come | provide a pull request | f(x)  |
 
 ## try out 
+
+### context generation
+
+```
+go run terraformer.go generate-context
+go run terraformer.go generate-context --state=./examples/context/terraform.tfstate
+go run terraformer.go generate-context --callback=./examples/context/callback.sh
+go run terraformer.go generate-context ./examples/context/config.yml
+```
+
+Combine all together.
+
+### tf main generation
+
 ```
 go run terraformer.go ./examples/aws/tf.template ./examples/aws/context.yml
 ```
@@ -94,8 +134,16 @@ go build
 
 ## todo
 
-- introduce flags, kingpin, etc for better command line experience
-- think about how to get dynamic data into context (e.g. kubectl queries)
+- (ok) introduce flags, kingpin, etc for better command line experience
+  - (ok) unit test
+- implement context generation
+  - basics, test
+  - config, test
+  - state, test
+  - callback, test
+  - template, test
+- implement tf generation
+  - basics, test
 - more terraform samples
 
 ![terraformer](doc/terraformer-logo-small.png)
