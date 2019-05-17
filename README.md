@@ -114,7 +114,7 @@ Go template processing is can be easily extended by special functions. The first
 go run terraformer.go generate-context
 go run terraformer.go generate-context --state=./examples/context/terraform.tfstate
 go run terraformer.go generate-context --callback=./examples/context/callback.sh
-go run terraformer.go generate-context ./examples/context/config.yml
+go run terraformer.go generate-context ./examples/context/config1.yml
 ```
 
 Combine all together.
@@ -122,7 +122,7 @@ Combine all together.
 ### tf main generation
 
 ```
-go run terraformer.go ./examples/aws/tf.template ./examples/aws/context.yml
+go run terraformer.go gen ./examples/aws/tf.template ./examples/aws/config.yml
 ```
 
 ## build
@@ -137,14 +137,16 @@ go build
 - (ok) introduce flags, kingpin, etc for better command line experience
   - (ok) unit test
 - implement context generation
-  - basics, test
-  - config, test
-  - state, test
-  - callback, test
+  - (ok) basics, test
+  - (ok) config, test
+  - (ok) state, test
+  - callback, test 
   - template, test
-- implement tf generation
+- (ok) implement tf generation
   - (ok) basics, test
 - more terraform samples
+- bash completion support (via homebrew)
+- man pages support
 
 ![terraformer](doc/terraformer-logo-small.png)
 

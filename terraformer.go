@@ -1,12 +1,15 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/go-yaml/yaml"
 	"gopkg.in/alecthomas/kingpin.v2"
 	"io/ioutil"
+	"log"
 	"os"
 	"path"
+	"strings"
 	"text/template"
 )
 
@@ -25,10 +28,10 @@ func main() {
 	contextFile := commandGenerate.Arg("context", "path to a yaml file").Required().ExistingFile()
 
 	commandGenerateContext := app.Command("generate-context", "generate a context yaml file, alias=ctx").Alias("ctx")
-	commandGenerateContext.Flag("state", "(optional) path to a terraform.tfsate file").ExistingFile()
-	commandGenerateContext.Flag("template", "(optional) path to a go template file").ExistingFile()
-	commandGenerateContext.Flag("callback", "(optional) list of executable script file printing YAML to stdout").ExistingFile()
-	commandGenerateContext.Arg("config-files", "(optional) list of yaml files").ExistingFiles()
+	stateFlag := commandGenerateContext.Flag("state", "(optional) path to a terraform.tfsate file").Short('s').ExistingFile()
+	templateFlag := commandGenerateContext.Flag("template", "(optional) path to a go template file").Short('t').ExistingFile()
+	callbackFlag := commandGenerateContext.Flag("callback", "(optional) list of executable script file printing YAML to stdout").Short('c').ExistingFile()
+	configFiles := commandGenerateContext.Arg("config-files", "(optional) list of yaml files").ExistingFiles()
 
 	s := kingpin.MustParse(app.Parse(os.Args[1:]))
 
@@ -36,10 +39,11 @@ func main() {
 	case (commandGenerate.FullCommand()):
 		generate(*templateFile, *contextFile)
 	case (commandGenerateContext.FullCommand()):
-		generateContext()
+		generateContext(*stateFlag, *templateFlag, *callbackFlag, *configFiles)
 	default:
 		fmt.Println(app.Help)
 	}
+
 }
 
 func generate(templateFile string, contextFile string) {
@@ -52,31 +56,112 @@ func generate(templateFile string, contextFile string) {
 
 	if err != nil {
 		fmt.Printf("error %v\n", err)
-		os.Exit( -1)
+		os.Exit(-1)
 	}
 
 	data, err := ioutil.ReadFile(contextFile)
 	if err != nil {
 		fmt.Printf("error %v\n", err)
-		os.Exit( -1)
+		os.Exit(-1)
 	}
 
 	var context interface{}
 	err = yaml.Unmarshal(data, &context)
 	if err != nil {
 		fmt.Printf("error %v\n", err)
-		os.Exit( -1)
+		os.Exit(-1)
 	}
 
 	err = template.Execute(os.Stdout, context)
 	if err != nil {
 		fmt.Printf("error %v\n", err)
-		os.Exit( -1)
+		os.Exit(-1)
 	}
 }
 
-func generateContext() {
-	fmt.Println("generate context - not implemented")
+func parseEnvironment() map[string]string {
+	parseEnvironment := func(data []string, getkeyval func(item string) (key, val string)) map[string]string {
+		items := make(map[string]string)
+		for _, item := range data {
+			key, val := getkeyval(item)
+			items[key] = val
+		}
+		return items
+	}
+
+	return parseEnvironment(os.Environ(), func(item string) (key, val string) {
+		splits := strings.Split(item, "=")
+		key = splits[0]
+		val = splits[1]
+		return
+	})
+}
+
+func readJson(filePath string) interface{} {
+	var jsonData interface{}
+
+	jsonFile, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		log.Printf("error %v\n ", err)
+		os.Exit(-1)
+	}
+	err = json.Unmarshal(jsonFile, &jsonData)
+	if err != nil {
+		log.Fatalf("error %v\n", err)
+		os.Exit(-1)
+	}
+
+	return jsonData
+}
+
+func readYaml(filePath string) interface{} {
+	var yamlData interface{}
+
+	yamlFile, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		log.Printf("error %v\n ", err)
+		os.Exit(-1)
+	}
+	err = yaml.Unmarshal(yamlFile, &yamlData)
+	if err != nil {
+		log.Fatalf("error %v\n", err)
+		os.Exit(-1)
+	}
+
+	return yamlData
+}
+
+func generateContext(stateFlag string, templateFlag string, callbackFlag string, configFiles []string) {
+	topNodes := make(map[string]interface{})
+	topNodes["env"] = parseEnvironment()
+
+	if stateFlag != "" {
+		topNodes["state"] = readJson(stateFlag)
+	}
+
+	if templateFlag != "" {
+		topNodes["templates"] = "not implemented"
+	}
+
+	if callbackFlag != "" {
+		topNodes["callback"] = "not implemented"
+	}
+
+	for idx, val := range configFiles {
+		cfg := readYaml(val)
+		x := fmt.Sprintf("config%v", idx)
+		topNodes[x] = cfg
+	}
+
+	ctx := make(map[string]interface{})
+	ctx["context"] = topNodes
+
+	yamlBytes, err := yaml.Marshal(&ctx)
+	if err != nil {
+		log.Fatalf("error: %v", err)
+	}
+
+	fmt.Println(string(yamlBytes))
 }
 
 func printVersion() string {

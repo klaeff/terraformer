@@ -8,14 +8,14 @@ import (
 	"testing"
 )
 
-
 func TestGenerate(t *testing.T) {
 	os.Args = []string{"terraformer",
-		"generate" ,
+		"generate",
 		"examples/unit-testing/tf.template",
 		"examples/unit-testing/context.yml"}
 
 	s := captureStdout(main)
+
 	assert.Contains(t, s, "map[context")
 	assert.Contains(t, s, "[\"1.1.1.1\", \"2.2.2.2\", \"3.3.3.3\"]")
 }
@@ -30,7 +30,15 @@ func TestGenerateContext(t *testing.T) {
 		"examples/unit-testing/config2.yml"}
 
 	s := captureStdout(main)
-	assert.Contains(t, s, "generate context")
+
+	assert.Contains(t, s, "context:")
+
+	assert.Contains(t, s, "env:")
+	assert.Contains(t, s, "HOME:")
+
+	assert.Contains(t, s, "state:")
+	assert.Contains(t, s, "terraform_version:")
+
 }
 
 func TestTfStringListFormater(t *testing.T) {
@@ -64,4 +72,3 @@ func captureStdout(f func()) string {
 	io.Copy(&buf, r)
 	return buf.String()
 }
-
