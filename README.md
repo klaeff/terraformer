@@ -143,7 +143,7 @@ go build
   - callback, test
   - template, test
 - implement tf generation
-  - basics, test
+  - (ok) basics, test
 - more terraform samples
 
 ![terraformer](doc/terraformer-logo-small.png)
