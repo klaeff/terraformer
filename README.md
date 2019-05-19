@@ -6,7 +6,7 @@ A go program that generates terraform files using go templates
 ## installation (osx)
 
 ```
-brew install sklevenz/skl/terraformer 
+brew install klaeff/tap/terraformer 
 ```
 
 ## usage
@@ -42,10 +42,6 @@ This solution uses go as technology and the go templates. Go, because of the sin
 
 ## concept
 
-
-
-
-
 The idea is:
 
 - step 1
@@ -73,9 +69,15 @@ Data sources, variable, loops, dependencies, modules ... all of this makes maint
 
 - create more but smaller templates 
 - deploy in chunks and have a defined order
+- have a ci job for each junk
 - practice TDI (test driven infrastructure)
-  - create a test account
-  - deploy form scratch, update and delete
+  - commit a config change to source repository
+  - have a iaas test account
+  - a ci deploys this change 
+    - from scratch, 
+    - does an update from previous version
+    - deletes all resources to save costs
+  - if all is ok then another ci job updates production
 
 ## examples
 
@@ -104,6 +106,7 @@ Go template processing is can be easily extended by special functions. The first
 | feature | description | example |
 |---------|-------------|---------|
 | tfStringListFormater | formats a list with quoted elements | [1,2,3] -> ["1","2","3"] |
+| tfCallback | call a script which prints to stdout | read dynamic values in tf.template |
 | more to come | provide a pull request | f(x)  |
 
 ## try out 
@@ -111,18 +114,18 @@ Go template processing is can be easily extended by special functions. The first
 ### context generation
 
 ```
-go run terraformer.go generate-context
-go run terraformer.go generate-context --state=./examples/context/terraform.tfstate
-go run terraformer.go generate-context --callback=./examples/context/callback.sh
-go run terraformer.go generate-context ./examples/context/config1.yml
+go run terraformer.go ctx > context.yml
+go run terraformer.go ctx --state=./examples/context/terraform.tfstate > context.yml
+go run terraformer.go ctx --callback=./examples/context/callback.sh > context.yml
+go run terraformer.go ctx ./examples/context/config1.yml > context.yml
 ```
 
-Combine all together.
+Feel free to do all of this in one.
 
 ### tf main generation
 
 ```
-go run terraformer.go gen ./examples/aws/tf.template ./examples/aws/config.yml
+go run terraformer.go gen ./examples/aws/tf.template ./examples/aws/context.yml > tf.main
 ```
 
 ## build
@@ -130,6 +133,24 @@ go run terraformer.go gen ./examples/aws/tf.template ./examples/aws/config.yml
 ```
 go test
 go build
+```
+
+## create a new release 
+
+```
+git tag
+git tag VERSION+1
+git push --tags
+goreleaser
+```
+
+### try out new release
+
+```
+brew update
+brew upgrade 
+
+terraformer --version
 ```
 
 ## todo
@@ -140,11 +161,11 @@ go build
   - (ok) basics, test
   - (ok) config, test
   - (ok) state, test
-  - callback, test 
-  - template, test
+  - (ok) callback, test 
+  - (skipped) template, test
 - (ok) implement tf generation
   - (ok) basics, test
-- more terraform samples
+- more terraform samples & use cases
 - bash completion support (via homebrew)
 - man pages support
 

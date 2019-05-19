@@ -41,10 +41,10 @@ changelog:
 brew:
   folder: Formula
   caveats: "How to use this binary"
-  homepage: "https://github.com/sklevenz/terraformer"
+  homepage: "https://github.com/klaeff/terraformer"
   description: "A go program that generates terraform using go templates ..."
   install: |
     bin.install "terraformer"
   github:
-    owner: sklevenz
-    name: homebrew-skl
+    owner: klaeff
+    name: homebrew-tap

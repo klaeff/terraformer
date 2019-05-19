@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"os/exec"
 	"path"
 	"strings"
 	"text/template"
@@ -49,6 +50,7 @@ func main() {
 func generate(templateFile string, contextFile string) {
 	funcMap := template.FuncMap{
 		"tfStringListFormater": tfStringListFormater,
+		"tfCallback": tfCallback,
 	}
 
 	templateName := path.Base(templateFile)
@@ -97,7 +99,7 @@ func parseEnvironment() map[string]string {
 	})
 }
 
-func readJson(filePath string) interface{} {
+func readJsonFile(filePath string) interface{} {
 	var jsonData interface{}
 
 	jsonFile, err := ioutil.ReadFile(filePath)
@@ -114,7 +116,7 @@ func readJson(filePath string) interface{} {
 	return jsonData
 }
 
-func readYaml(filePath string) interface{} {
+func readYamlFile(filePath string) interface{} {
 	var yamlData interface{}
 
 	yamlFile, err := ioutil.ReadFile(filePath)
@@ -131,12 +133,30 @@ func readYaml(filePath string) interface{} {
 	return yamlData
 }
 
+func readYamlCallback(scriptFile string) interface{} {
+	var err error
+	yamlBytes, err := exec.Command(scriptFile).Output()
+	if (err != nil){
+		fmt.Printf("error: %v\n", err)
+	}
+
+	var yamlData interface{}
+
+	err = yaml.Unmarshal([]byte(yamlBytes), &yamlData)
+	if err != nil {
+		fmt.Printf("error: %v", err)
+		os.Exit(-1)
+	}
+
+	return yamlData
+}
+
 func generateContext(stateFlag string, templateFlag string, callbackFlag string, configFiles []string) {
 	topNodes := make(map[string]interface{})
 	topNodes["env"] = parseEnvironment()
 
 	if stateFlag != "" {
-		topNodes["state"] = readJson(stateFlag)
+		topNodes["state"] = readJsonFile(stateFlag)
 	}
 
 	if templateFlag != "" {
@@ -144,11 +164,11 @@ func generateContext(stateFlag string, templateFlag string, callbackFlag string,
 	}
 
 	if callbackFlag != "" {
-		topNodes["callback"] = "not implemented"
+		topNodes["callback"] = readYamlCallback(callbackFlag)
 	}
 
 	for idx, val := range configFiles {
-		cfg := readYaml(val)
+		cfg := readYamlFile(val)
 		x := fmt.Sprintf("config%v", idx)
 		topNodes[x] = cfg
 	}
@@ -170,6 +190,15 @@ func printVersion() string {
 		"  commit-id: \"%v\"\n"+
 		"  date: \"%v\"\n"+
 		"}", version, commit, date)
+}
+
+func tfCallback(scriptFile string) string {
+
+	out, err := exec.Command(scriptFile).Output()
+	if (err != nil){
+		fmt.Printf("error: %v\n", err)
+	}
+	return strings.TrimSuffix(string(out), "\n")
 }
 
 func tfStringListFormater(a []interface{}) string {

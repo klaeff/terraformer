@@ -2,3 +2,5 @@
 2 {{ index .context.lll 0 }}
 3 {{ index .context "mmm" 2 "cc" }}
 4 {{ tfStringListFormater .context.ips }}
+5 {{ tfCallback "examples/unit-testing/callback-value.sh"}}
+6
