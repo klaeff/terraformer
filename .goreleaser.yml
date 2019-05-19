@@ -45,6 +45,8 @@ brew:
   description: "A go program that generates terraform using go templates ..."
   install: |
     bin.install "terraformer"
+  test: |
+    system "#(bin)/terraformer --version"
   github:
     owner: klaeff
     name: homebrew-tap
