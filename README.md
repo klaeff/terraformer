@@ -9,6 +9,19 @@ A go program that generates terraform files using go templates
 brew install klaeff/tap/terraformer 
 ```
 
+### bash completion
+
+
+´´´
+eval "$(`)"
+´´´
+
+- add to your provile
+- or
+  - `brew install bash-completion` 
+  - `terraformer --completion-script-bash > /usr/local/etc/bash_completion.d/terraformer`
+
+
 ## usage
 
 ```
@@ -166,7 +179,7 @@ terraformer --version
 - (ok) implement tf generation
   - (ok) basics, test
 - more terraform samples & use cases
-- bash completion support (via homebrew)
+- (ok= bash completion support (via homebrew)
 - man pages support
 
 ![terraformer](doc/terraformer-logo-small.png)
