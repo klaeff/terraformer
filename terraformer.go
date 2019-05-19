@@ -23,6 +23,7 @@ var (
 func main() {
 	app := kingpin.New("terraformer", "A go program that generates terraform files using go templates")
 	app.Version(printVersion()).Author("Stephan Klevenz")
+	app.HelpFlag.Short('h')
 
 	commandGenerate := app.Command("generate", "generate a terraform file (main.tf), alias=gen").Alias("gen")
 	templateFile := commandGenerate.Arg("terraform-template", "path to a go template file").Required().ExistingFile()
