@@ -12,15 +12,10 @@ brew install klaeff/tap/terraformer
 ### bash completion
 
 
-´´´
-eval "$(`)"
-´´´
-
-- add to your provile
-- or
-  - `brew install bash-completion` 
-  - `terraformer --completion-script-bash > /usr/local/etc/bash_completion.d/terraformer`
-
+```
+brew install bash-completion 
+terraformer --completion-script-bash > /usr/local/etc/bash_completion.d/terraformer
+```
 
 ## usage
 
