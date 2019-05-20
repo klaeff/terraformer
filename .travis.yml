@@ -1,5 +1,18 @@
+dist: xenial
 language: go
+env:
+  - GO111MODULE=on
+  - GOFLAGS='-mod vendor'
 
 go:
-  - "1.x"
-  - master
+  - 1.12.x
+
+git:
+  depth: 1
+
+# Skip the install step. Don't `go get` dependencies. Only build with the code
+# in vendor/
+install: true
+
+script:
+  - go test -v ./...  # Run all the tests
