@@ -1,4 +1,6 @@
-# terraformer
+# terraformer 
+[![Build Status](https://travis-ci.org/klaeff/terraformer.png?branch=master)](https://travis-ci.org/klaeff/terraformer)
+
 A go program that generates terraform files using go templates
 
 ![terraformer](doc/terraformer-planet.jpg)
