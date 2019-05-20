@@ -5,7 +5,7 @@ env:
   - GOFLAGS='-mod vendor'
 
 go:
-  - 1.12.x
+  - 1.x
 
 git:
   depth: 1
