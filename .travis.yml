@@ -1,14 +1,7 @@
-dist: xenial
 language: go
-env:
-  - GOFLAGS='-mod vendor'
-  - GO111MODULE=on
-
-go:
 
 go:
   - "1.x"
-  - "1.12.x"
   - master
   
 git:
@@ -18,5 +11,3 @@ git:
 # in vendor/
 install: true
 
-script:
-  - go test -v ./...  # Run all the tests
