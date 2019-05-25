@@ -13,5 +13,5 @@ resource "aws_route53_record" "some-dns-record" {
 }
 
 resource "dummy" {
-  callback = "{{ tfCallback "examples/aws/callback.sh"  }}"
+  callback = "{{ tfCallback "callback.sh"  }}"
 }

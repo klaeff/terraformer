@@ -20,20 +20,23 @@ var (
 	date    string = "unknown"
 )
 
+var (
+	app = kingpin.New("terraformer", "A go program that generates terraform files using go templates")
+
+	commandGenerate = app.Command("generate", "generate a terraform file (main.tf), alias=gen").Alias("gen")
+	templateFile    = commandGenerate.Arg("terraform-template", "path to a go template file").Required().ExistingFile()
+	contextFile     = commandGenerate.Arg("context", "path to a yaml file").Required().ExistingFile()
+
+	commandGenerateContext = app.Command("generate-context", "generate a context yaml file, alias=ctx").Alias("ctx")
+	stateFlag              = commandGenerateContext.Flag("state", "(optional) path to a terraform.tfsate file").Short('s').ExistingFile()
+	templateFlag           = commandGenerateContext.Flag("template", "(optional) path to a go template file").Short('t').ExistingFile()
+	callbackFlag           = commandGenerateContext.Flag("callback", "(optional) list of executable script file printing YAML to stdout").Short('c').ExistingFile()
+	configFiles            = commandGenerateContext.Arg("config-files", "(optional) list of yaml files").ExistingFiles()
+)
+
 func main() {
-	app := kingpin.New("terraformer", "A go program that generates terraform files using go templates")
 	app.Version(printVersion()).Author("Stephan Klevenz")
 	app.HelpFlag.Short('h')
-
-	commandGenerate := app.Command("generate", "generate a terraform file (main.tf), alias=gen").Alias("gen")
-	templateFile := commandGenerate.Arg("terraform-template", "path to a go template file").Required().ExistingFile()
-	contextFile := commandGenerate.Arg("context", "path to a yaml file").Required().ExistingFile()
-
-	commandGenerateContext := app.Command("generate-context", "generate a context yaml file, alias=ctx").Alias("ctx")
-	stateFlag := commandGenerateContext.Flag("state", "(optional) path to a terraform.tfsate file").Short('s').ExistingFile()
-	templateFlag := commandGenerateContext.Flag("template", "(optional) path to a go template file").Short('t').ExistingFile()
-	callbackFlag := commandGenerateContext.Flag("callback", "(optional) list of executable script file printing YAML to stdout").Short('c').ExistingFile()
-	configFiles := commandGenerateContext.Arg("config-files", "(optional) list of yaml files").ExistingFiles()
 
 	s := kingpin.MustParse(app.Parse(os.Args[1:]))
 
@@ -51,7 +54,7 @@ func main() {
 func generate(templateFile string, contextFile string) {
 	funcMap := template.FuncMap{
 		"tfStringListFormater": tfStringListFormater,
-		"tfCallback": tfCallback,
+		"tfCallback":           tfCallback,
 	}
 
 	templateName := path.Base(templateFile)
@@ -137,7 +140,7 @@ func readYamlFile(filePath string) interface{} {
 func readYamlCallback(scriptFile string) interface{} {
 	var err error
 	yamlBytes, err := exec.Command(scriptFile).Output()
-	if (err != nil){
+	if err != nil {
 		fmt.Printf("error: %v\n", err)
 	}
 
@@ -195,8 +198,11 @@ func printVersion() string {
 
 func tfCallback(scriptFile string) string {
 
+	// call script relative to template file
+	scriptFile = path.Join(path.Dir(*templateFile), scriptFile)
+
 	out, err := exec.Command(scriptFile).Output()
-	if (err != nil){
+	if err != nil {
 		fmt.Printf("error: %v\n", err)
 	}
 	return strings.TrimSuffix(string(out), "\n")

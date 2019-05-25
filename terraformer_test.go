@@ -65,11 +65,9 @@ func TestTfCallback(t *testing.T) {
 	// var array []interface{}{1, 2, "4", 1.4}
 	var result string
 
-	result = tfCallback("examples/unit-testing/callback-value.sh")
+	result = tfCallback("callback-value.sh")
 	assert.Equal(t, "4711", result)
 }
-
-
 
 func captureStdout(f func()) string {
 	old := os.Stdout

@@ -116,7 +116,7 @@ Go template processing is can be easily extended by special functions. The first
 | feature | description | example |
 |---------|-------------|---------|
 | tfStringListFormater | formats a list with quoted elements | [1,2,3] -> ["1","2","3"] |
-| tfCallback | call a script which prints to stdout | read dynamic values in tf.template |
+| tfCallback | call a script which prints to stdout (relative to the template file) | read dynamic values in tf.template |
 | more to come | provide a pull request | f(x)  |
 
 ## try out 
