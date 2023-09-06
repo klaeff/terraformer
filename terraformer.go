@@ -3,8 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/go-yaml/yaml"
-	"gopkg.in/alecthomas/kingpin.v2"
 	"io/ioutil"
 	"log"
 	"os"
@@ -12,6 +10,9 @@ import (
 	"path"
 	"strings"
 	"text/template"
+
+	"github.com/alecthomas/kingpin/v2"
+	"github.com/go-yaml/yaml"
 )
 
 var (
