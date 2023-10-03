@@ -12,7 +12,7 @@ import (
 	"text/template"
 
 	"github.com/alecthomas/kingpin/v2"
-	"github.com/go-yaml/yaml"
+	"gopkg.in/yaml.v3"
 )
 
 var (
